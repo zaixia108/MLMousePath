@@ -40,7 +40,7 @@ print(result)
 ### 数据收集和训练
 
 ```python
-from mlmouse import TrainBySelf
+from mlmp import TrainBySelf
 
 # 初始化训练器
 trainer = TrainBySelf()
@@ -61,7 +61,7 @@ trainer.train()
 ### 时间序列功能（开发功能）
 
 ```python
-from mlmouse import TrainBySelf
+from mlmp import TrainBySelf
 
 # 初始化训练器并启用开发功能
 trainer = TrainBySelf()
