@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mlmp"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
     { name = "zaixia108", email = "xvbowen2012@gmail.com" }
 ]
@@ -23,4 +23,4 @@ dependencies = [
 urls = { homepage = "https://github.com/zaixia108/MLMousePath" }
 
 [tool.setuptools.package-data]
-mlmouse = ["*.dll"]
+mlmp = ["*.dll"]

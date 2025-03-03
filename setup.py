@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mlmp",  # 包名
-    version="0.1.0",  # 版本号
+    version="0.1.1",  # 版本号
     author="zaixia108",  # 作者名
     author_email="xvbowen2012@gmail.com",  # 作者邮箱
     description="A Python package for mouse path control and training.",  # 描述
@@ -11,7 +11,7 @@ setup(
     url="https://github.com/zaixia108/MLMousePath",  # 项目主页
     packages=find_packages(),  # 自动查找包
     package_data={
-        "mlmouse": ["*.dll"],  # 包含 DLL 文件
+        "mlmp": ["*.dll"],  # 包含 DLL 文件
     },
     include_package_data=True,  # 包含非 Python 文件
     classifiers=[
