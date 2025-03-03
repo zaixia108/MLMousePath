@@ -2,10 +2,12 @@ import os
 import numpy as np
 import onnxruntime
 import ctypes
+from importlib.resources import files as resource_path
 
+dll_resource = resource_path('mlmouse').joinpath('mouse.dll')
 
 class MLMouse:
-    def __init__(self, model_path, dll: bool = True):
+    def __init__(self, model_path: str = str(dll_resource), dll: bool = True):
         if dll:
             model = self.load_from_dll(model_path)
         else:
