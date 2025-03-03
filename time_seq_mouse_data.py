@@ -46,18 +46,14 @@ def motion(event):
 def mouse_click(event):
     global recording, mouse_path, ball2_pos, n, time_stamps
 
-    if (event.x >= ball1_pos[0] - ball_radius and
-            event.x <= ball1_pos[0] + ball_radius and
-            event.y >= ball1_pos[1] - ball_radius and
-            event.y <= ball1_pos[1] + ball_radius):
+    if (ball1_pos[0] - ball_radius <= event.x <= ball1_pos[0] + ball_radius and
+            ball1_pos[1] - ball_radius <= event.y <= ball1_pos[1] + ball_radius):
         recording = True
         current_time = time.time() * 1000  # 转换为毫秒
         mouse_path = [(event.x, event.y)]
         time_stamps = [current_time]
-    elif (event.x >= ball2_pos[0] - ball_radius and
-          event.x <= ball2_pos[0] + ball_radius and
-          event.y >= ball2_pos[1] - ball_radius and
-          event.y <= ball2_pos[1] + ball_radius):
+    elif (ball2_pos[0] - ball_radius <= event.x <= ball2_pos[0] + ball_radius and
+          ball2_pos[1] - ball_radius <= event.y <= ball2_pos[1] + ball_radius):
         recording = False
         canvas.delete("ball2")
         save_to_csv(mouse_path, time_stamps)
@@ -119,36 +115,6 @@ def save_to_csv(path, timestamps):
     with open(csv_file_path, mode='a', newline='') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow([final_point] + key_points)
-
-
-def visualize_path(path, timestamps):
-    if not path or not timestamps:
-        return
-
-    # 将路径坐标转换为相对于起点的坐标
-    x_rel = [px - path[0][0] for px, py in path]
-    y_rel = [-(py - path[0][1]) for px, py in path]
-
-    # 计算相对时间
-    relative_times = [t - timestamps[0] for t in timestamps]
-
-    # 创建3D图
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
-    # 绘制3D路径
-    scatter = ax.scatter(x_rel, y_rel, relative_times,
-                         c=relative_times, cmap='viridis')
-
-    # 设置轴标签
-    ax.set_xlabel('X relative')
-    ax.set_ylabel('Y relative')
-    ax.set_zlabel('Time (ms)')
-
-    # 添加颜色条
-    plt.colorbar(scatter, label='Time (ms)')
-
-    plt.show()
 
 
 # 创建画布和小球
