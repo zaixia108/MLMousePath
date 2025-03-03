@@ -1,0 +1,8 @@
+/build
+/dist
+/imgs
+/MouseControl
+*.pth
+*.pyc
+*.csv
+*.onnx
