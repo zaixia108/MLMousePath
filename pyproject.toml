@@ -20,7 +20,7 @@ classifiers = [
 dependencies = [
     "onnxruntime",
 ]
-urls = { homepage = "https://github.com/zaixia108/MLMouseMove" }
+urls = { homepage = "https://github.com/zaixia108/MLMousePath" }
 
 [tool.setuptools.package-data]
 mlmouse = ["*.dll"]

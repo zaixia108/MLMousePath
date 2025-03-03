@@ -9,7 +9,7 @@ __all__ = ['mouse', 'TrainBySelf']
 class mouse:
     def __init__(self, model_path: str = None, dll: bool = True):
         if model_path is None:
-            dll_resource = resource_path('mlmouse').joinpath('mouse.dll')
+            dll_resource = resource_path('mlmp').joinpath('mouse.dll')
             model_path = str(dll_resource)
         self.mlmouse = MLMouse(model_path, dll)
 

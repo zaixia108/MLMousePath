@@ -8,7 +8,7 @@ setup(
     description="A Python package for mouse path control and training.",  # 描述
     long_description=open("README.md").read(),  # 长描述（README 文件）
     long_description_content_type="text/markdown",  # 长描述格式
-    url="https://github.com/zaixia108/MLMouseMove",  # 项目主页
+    url="https://github.com/zaixia108/MLMousePath",  # 项目主页
     packages=find_packages(),  # 自动查找包
     package_data={
         "mlmouse": ["*.dll"],  # 包含 DLL 文件
