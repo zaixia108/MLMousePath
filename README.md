@@ -96,3 +96,6 @@ trainer.dev_features = True
 ## 项目主页
 
 访问 [GitHub 仓库](https://github.com/zaixia108/MLMousePath) 获取最新版本和源代码。
+
+## 致谢
+本项目的部分代码借鉴了 [suixin1424/mouse_control](https://github.com/suixin1424/mouse_control) 的实现
