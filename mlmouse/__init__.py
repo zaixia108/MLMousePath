@@ -1,11 +1,10 @@
 import os.path
 from mlmouse.predict import MLMouse
-import mlmouse.normal_mouse_data
-import mlmouse.train
 from importlib.resources import files as resource_path
 
 
 __all__ = ['mouse', 'TrainBySelf']
+
 
 class mouse:
     def __init__(self, model_path: str = None, dll: bool = True):
@@ -24,7 +23,8 @@ class TrainBySelf:
 
     @staticmethod
     def collect_data():
-        normal_mouse_data.MouseDataCollector()
+        import mlmouse.normal_mouse_data
+        mlmouse.normal_mouse_data.MouseDataCollector()
 
     @staticmethod
     def train():
@@ -36,6 +36,7 @@ class TrainBySelf:
             pass
         else:
             raise Exception('mouse_data_test.csv not found')
+        import mlmouse.train
         mlmouse.train.main_prog()
 
     def time_seq_mouse_data(self):
