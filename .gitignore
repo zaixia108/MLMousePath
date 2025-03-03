@@ -2,6 +2,7 @@
 /dist
 /imgs
 /MouseControl
+/.idea
 *.pth
 *.pyc
 *.csv
