@@ -1,16 +1,17 @@
 import os.path
-
-from predict import MLMouse
+from mlmouse.predict import MLMouse
 import mlmouse.normal_mouse_data
 import mlmouse.train
-import mlmouse.time_seq_mouse_data
-import mlmouse.time_seq_train
+from importlib.resources import files as resource_path
 
-__all__ = ['mouse', 'normal_mouse_data', 'train', 'time_seq_mouse_data', 'time_seq_train']
 
+__all__ = ['mouse', 'TrainBySelf']
 
 class mouse:
-    def __init__(self, model_path, dll: bool = True):
+    def __init__(self, model_path: str = None, dll: bool = True):
+        if model_path is None:
+            dll_resource = resource_path('mlmouse').joinpath('mouse.dll')
+            model_path = str(dll_resource)
         self.mlmouse = MLMouse(model_path, dll)
 
     def mouse_output(self, start, end, absulute=False) -> list:
@@ -21,10 +22,12 @@ class TrainBySelf:
     def __init__(self, dev_features: bool = False):
         self.dev_features = dev_features
 
-    def collect_data(self):
-        normal_mouse_data.main_prog()
+    @staticmethod
+    def collect_data():
+        normal_mouse_data.MouseDataCollector()
 
-    def train(self):
+    @staticmethod
+    def train():
         if os.path.exists('mouse_data.csv'):
             pass
         else:
@@ -36,11 +39,13 @@ class TrainBySelf:
         mlmouse.train.main_prog()
 
     def time_seq_mouse_data(self):
+        import mlmouse.time_seq_mouse_data
         if not self.dev_features:
             raise Exception('Dev features not enabled')
-        mlmouse.time_seq_mouse_data.main_prog()
+        mlmouse.time_seq_mouse_data.MouseDataCollector()
 
     def time_seq_train(self):
+        import mlmouse.time_seq_train
         if not self.dev_features:
             raise Exception('Dev features not enabled')
         if os.path.exists('mouse_data_time_seq.csv'):

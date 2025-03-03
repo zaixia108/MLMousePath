@@ -129,12 +129,12 @@ def train_model():
         # 保存最佳模型
         if avg_val_loss < best_loss:
             best_loss = avg_val_loss
-            torch.save(model.state_dict(), 'best_mouse_model.pth')
+            torch.save(model.state_dict(), '../best_mouse_model.pth')
 
         # 导出ONNX模型
         model.eval()
         dummy_input = torch.randn(1, 3)
-        torch.onnx.export(model, dummy_input, 'mouse_model.onnx',
+        torch.onnx.export(model, dummy_input, '../mouse_model.onnx',
                           input_names=['input'],
                           output_names=['output'],
                           dynamic_axes={'input': {0: 'batch_size'},

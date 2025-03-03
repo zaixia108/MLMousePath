@@ -1,136 +1,203 @@
+import os
 import random
 import tkinter as tk
 import csv
 import time
 from tkinter import Label
 
+class MouseDataCollector:
+    BALL_RADIUS = 20
+    OFFSET_RANGE = 500
+    TARGET_SAMPLES = 100
 
-def main_prog():
-    # 创建窗口
-    root = tk.Tk()
-    root.attributes('-fullscreen', True)  # 全屏显示
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.attributes('-fullscreen', True)
 
-    label_n = Label(root, text="n: 0", font=("Helvetica", 16))
-    label_n.pack()
+        # 状态变量
+        self.recording = False
+        self.mouse_path = []
+        self.time_stamps = []
+        self.sample_count = 0
 
-    csv_file_path = "mouse_data_time_seq.csv"
+        # 初始化界面元素
+        self.create_widgets()
+        self.setup_balls()
+        self.setup_file_handler()
 
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
+        # 事件绑定
+        self.canvas.bind('<Motion>', self.on_mouse_move)
+        self.canvas.bind('<Button-1>', self.on_mouse_click)
+        self.root.bind('<Key>', self.on_key_press)
+        self.root.mainloop()
 
-    # 设置小球的初始位置
-    ball1_pos = (screen_width / 2, screen_height / 2)
-    ball2_pos = (ball1_pos[0] + random.randint(-500, 500), ball1_pos[1] + random.randint(-500, 500))
+    def create_widgets(self):
+        """创建界面组件"""
+        self.status_label = Label(
+            self.root,
+            text=f"Collected: {self.sample_count}/{self.TARGET_SAMPLES}",
+            font=("Helvetica", 16)
+        )
+        self.status_label.pack()
 
-    # 设置小球的半径
-    ball_radius = 20
+        self.canvas = tk.Canvas(
+            self.root,
+            width=self.root.winfo_screenwidth(),
+            height=self.root.winfo_screenheight()
+        )
+        self.canvas.pack()
 
-    # 设置鼠标记录状态
-    recording = False
-    mouse_path = []
-    time_stamps = []  # 新增：记录时间戳
+    def setup_balls(self):
+        """初始化球体位置"""
+        screen_center = (
+            self.root.winfo_screenwidth() / 2,
+            self.root.winfo_screenheight() / 2
+        )
+        self.start_ball_pos = screen_center
+        self.target_ball_pos = self.generate_valid_position()
 
-    n = 0
+        # 绘制初始球体
+        self.draw_ball(*self.start_ball_pos, "red")
+        self.draw_ball(*self.target_ball_pos, "blue", "target")
 
+    def setup_file_handler(self):
+        """初始化CSV文件处理"""
+        self.csv_path = "mouse_data_time_seq.csv"
+        if not os.path.exists(self.csv_path):
+            with open(self.csv_path, 'w', newline='') as f:
+                f.close()
 
-    # 鼠标移动事件处理函数
-    def motion(event):
-        global recording, mouse_path, time_stamps
-        if recording:
+    def draw_ball(self, x, y, color, tag=None):
+        """绘制球体辅助方法"""
+        return self.canvas.create_oval(
+            x - self.BALL_RADIUS,
+            y - self.BALL_RADIUS,
+            x + self.BALL_RADIUS,
+            y + self.BALL_RADIUS,
+            fill=color,
+            tags=tag
+        )
+
+    def generate_valid_position(self):
+        """生成符合条件的目标球位置"""
+        while True:
+            dx = random.randint(-self.OFFSET_RANGE, self.OFFSET_RANGE)
+            dy = random.randint(-self.OFFSET_RANGE, self.OFFSET_RANGE)
+            new_x = self.start_ball_pos[0] + dx
+            new_y = self.start_ball_pos[1] + dy
+
+            # 边界检查
+            in_bounds = (
+                self.BALL_RADIUS <= new_x <= self.root.winfo_screenwidth() - self.BALL_RADIUS and
+                self.BALL_RADIUS <= new_y <= self.root.winfo_screenheight() - self.BALL_RADIUS
+            )
+
+            # 距离检查（至少2倍半径）
+            distance = ((new_x - self.start_ball_pos[0])**2 +
+                       (new_y - self.start_ball_pos[1])**2)**0.5
+            if in_bounds and distance >= 2 * self.BALL_RADIUS:
+                return (new_x, new_y)
+
+    def on_mouse_move(self, event):
+        """处理鼠标移动事件"""
+        if self.recording:
             current_time = time.time() * 1000  # 转换为毫秒
-            mouse_path.append((event.x, event.y))
-            time_stamps.append(current_time)
+            self.mouse_path.append((event.x, event.y))
+            self.time_stamps.append(current_time)
 
+    def on_mouse_click(self, event):
+        """处理鼠标点击事件"""
+        if self.is_clicked_ball(event, self.start_ball_pos):
+            self.start_recording(event)
+        elif self.is_clicked_ball(event, self.target_ball_pos):
+            self.stop_recording()
 
-    # 鼠标点击事件处理函数
-    def mouse_click(event):
-        global recording, mouse_path, ball2_pos, n, time_stamps
+    def is_clicked_ball(self, event, ball_pos):
+        """判断是否点击到球体"""
+        x, y = event.x, event.y
+        return (
+            ball_pos[0] - self.BALL_RADIUS <= x <= ball_pos[0] + self.BALL_RADIUS and
+            ball_pos[1] - self.BALL_RADIUS <= y <= ball_pos[1] + self.BALL_RADIUS
+        )
 
-        if (ball1_pos[0] - ball_radius <= event.x <= ball1_pos[0] + ball_radius and
-                ball1_pos[1] - ball_radius <= event.y <= ball1_pos[1] + ball_radius):
-            recording = True
-            current_time = time.time() * 1000  # 转换为毫秒
-            mouse_path = [(event.x, event.y)]
-            time_stamps = [current_time]
-        elif (ball2_pos[0] - ball_radius <= event.x <= ball2_pos[0] + ball_radius and
-              ball2_pos[1] - ball_radius <= event.y <= ball2_pos[1] + ball_radius):
-            recording = False
-            canvas.delete("ball2")
-            save_to_csv(mouse_path, time_stamps)
-            n = n + 1
-            if n == 100:
-                root.destroy()
-            label_n.config(text=f"n: {n}")
-            mouse_path = []
-            time_stamps = []
+    def start_recording(self, event):
+        """开始记录路径"""
+        self.recording = True
+        current_time = time.time() * 1000
+        self.mouse_path = [(event.x, event.y)]
+        self.time_stamps = [current_time]
 
-            # 重新生成第二个小球的位置
-            ball2_pos = (ball1_pos[0] + random.randint(-500, 500),
-                         ball1_pos[1] + random.randint(-500, 500))
+    def stop_recording(self):
+        """停止记录并保存数据"""
+        self.recording = False
+        if len(self.mouse_path) >= 2:  # 过滤无效点击
+            self.save_data()
+            self.sample_count += 1
+            self.update_ui()
+            self.reset_target_ball()
 
-            # 绘制新的第二个小球
-            canvas.create_oval(ball2_pos[0] - ball_radius, ball2_pos[1] - ball_radius,
-                               ball2_pos[0] + ball_radius, ball2_pos[1] + ball_radius,
-                               fill="blue", tags="ball2")
+        if self.sample_count >= self.TARGET_SAMPLES:
+            self.root.destroy()
 
+    def save_data(self):
+        """处理并保存数据到CSV"""
+        try:
+            # 转换坐标系和计算相对时间
+            base_x, base_y = self.mouse_path[0]
+            base_time = self.time_stamps[0]
+            x_rel = [x - base_x for x, y in self.mouse_path]
+            y_rel = [base_y - y for x, y in self.mouse_path]  # 转换为笛卡尔坐标系
+            t_rel = [t - base_time for t in self.time_stamps]
 
-    # 键盘事件处理函数
-    def key(event):
+            # 均匀采样关键点
+            key_points = self.sample_key_points(x_rel, y_rel, t_rel)
+            self.write_to_csv(key_points)
+        except Exception as e:
+            print(f"Error saving data: {e}")
+
+    def sample_key_points(self, x, y, t):
+        """均匀采样10个关键点（带插值）"""
+        num_points = 10
+        indices = []
+        path_length = len(x)
+
+        if path_length >= num_points:
+            step = max(1, (path_length - 1) / (num_points - 1))
+            indices = [int(i * step) for i in range(num_points)]
+        else:
+            # 对于短路径进行线性插值
+            indices = list(range(path_length))
+            indices += [path_length - 1] * (num_points - path_length)
+
+        return [
+            (x[i], y[i], t[i])
+            for i in indices[:num_points]  # 确保正好10个点
+        ]
+
+    def write_to_csv(self, key_points):
+        """写入CSV文件"""
+        target = f"{key_points[-1][0]},{key_points[-1][1]},{key_points[-1][2]}"
+        kp_data = [f"{x},{y},{t}" for x, y, t in key_points]
+
+        with open(self.csv_path, 'a', newline='') as f:
+            csv.writer(f).writerow([target] + kp_data)
+
+    def update_ui(self):
+        """更新界面状态"""
+        self.status_label.config(
+            text=f"Collected: {self.sample_count}/{self.TARGET_SAMPLES}")
+        self.canvas.update()
+
+    def reset_target_ball(self):
+        """重置目标球位置"""
+        self.target_ball_pos = self.generate_valid_position()
+        self.canvas.delete("target")
+        self.draw_ball(*self.target_ball_pos, "blue", "target")
+
+    def on_key_press(self, event):
+        """处理键盘事件"""
         if event.keysym == "Escape":
-            root.destroy()
+            self.root.destroy()
 
-
-    def save_to_csv(path, timestamps):
-        # 确保至少有一个点
-        if not path or not timestamps:
-            return
-
-        # 将路径坐标转换为相对于起点的坐标
-        x_rel = [px - path[0][0] for px, py in path]
-        y_rel = [-(py - path[0][1]) for px, py in path]
-
-        # 将时间戳转换为相对时间（相对于第一个点的时间）
-        relative_times = [t - timestamps[0] for t in timestamps]
-
-        # 选择10个关键点
-        num_points = len(path)
-        key_points_indices = [int(i) for i in range(0, num_points, max(1, num_points // 10))][:10]
-
-        # 如果点数不足10个，补充最后一个点
-        while len(key_points_indices) < 10:
-            key_points_indices.append(key_points_indices[-1])
-
-        # 提取关键点的数据
-        key_points = []
-        for i in key_points_indices:
-            x = x_rel[i]
-            y = y_rel[i]
-            t = relative_times[i]
-            key_points.append(f"{x},{y},{t}")
-
-        # 添加终点的相对坐标和时间
-        final_point = f"{x_rel[-1]},{y_rel[-1]},{relative_times[-1]}"
-
-        # 写入CSV文件
-        with open(csv_file_path, mode='a', newline='') as csv_file:
-            csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writerow([final_point] + key_points)
-
-
-    # 创建画布和小球
-    canvas = tk.Canvas(root, width=screen_width, height=screen_height)
-    canvas.pack()
-    canvas.create_oval(ball1_pos[0] - ball_radius, ball1_pos[1] - ball_radius,
-                       ball1_pos[0] + ball_radius, ball1_pos[1] + ball_radius,
-                       fill="red")
-    canvas.create_oval(ball2_pos[0] - ball_radius, ball2_pos[1] - ball_radius,
-                       ball2_pos[0] + ball_radius, ball2_pos[1] + ball_radius,
-                       fill="blue", tags="ball2")
-
-    # 绑定事件
-    canvas.bind('<Motion>', motion)
-    canvas.bind('<Button-1>', mouse_click)
-    root.bind('<Key>', key)
-
-    # 运行窗口
-    root.mainloop()
+if __name__ == "__main__":
+    MouseDataCollector()

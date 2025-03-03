@@ -4,10 +4,8 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import torch.nn as nn
 import torch.optim as optim
-
-
 # 设置使用cuda
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 class MouseDataset(Dataset):
@@ -80,6 +78,7 @@ class MouseTrajectoryModel(nn.Module):
 
 def train_model():
     # 加载数据
+    torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     train_dataset = MouseDataset('mouse_data_time_seq.csv')
     test_dataset = MouseDataset('mouse_data_time_seq_test.csv')
 

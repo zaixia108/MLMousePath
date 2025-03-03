@@ -1,19 +1,20 @@
 import numpy as np
 import pandas as pd
-import torch
-from torch.utils.data import Dataset, DataLoader
-import torch.nn as nn
-import torch.optim as optim
-import onnxruntime
-import onnx
-from onnxsim import simplify
 
 
-def main_prog():
+
+def main_prog(batch_size=64, epochs=2000):
+    import torch
+    from torch.utils.data import Dataset, DataLoader
+    import torch.nn as nn
+    import torch.optim as optim
+    import onnxruntime
+    import onnx
+    from onnxsim import simplify
     # 读取CSV文件
-    train_csv_path = 'mouse_data.csv'  # 替换为你的CSV文件路径
+    train_csv_path = 'mouse_data.csv'
     train_csv = pd.read_csv(train_csv_path, header=None)
-    test_csv_path = 'mouse_data_test.csv'  # 替换为你的CSV文件路径
+    test_csv_path = 'mouse_data_test.csv'
     test_csv = pd.read_csv(test_csv_path, header=None)
 
     # 提取dx, dy和标签
@@ -45,7 +46,7 @@ def main_prog():
     # 创建Dataset和DataLoader
     train_dataset = CustomDataset(dx_dy_train_tensor, labels_train_tensor)
     test_dataset = CustomDataset(dx_dy_test_tensor, labels_test_tensor)
-    batch_size = 64
+    # batch_size = 64
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
@@ -73,7 +74,7 @@ def main_prog():
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.9)
 
     # 训练模型
-    epochs = 2000
+    # epochs = 2000
     for epoch in range(epochs):
         for batch_dx_dy, batch_labels in train_dataloader:
             optimizer.zero_grad()

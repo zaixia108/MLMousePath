@@ -12,7 +12,7 @@ root.attributes('-fullscreen', True)  # 全屏显示
 label_n = Label(root, text="n: 0", font=("Helvetica", 16))
 label_n.pack()
 
-csv_file_path = "mouse_data.csv"
+csv_file_path = "../mouse_data.csv"
 
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight()

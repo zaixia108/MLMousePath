@@ -9,9 +9,9 @@ import onnx
 from onnxsim import simplify
 
 # 读取CSV文件
-train_csv_path = 'mouse_data.csv'  # 替换为你的CSV文件路径
+train_csv_path = '../mouse_data.csv'  # 替换为你的CSV文件路径
 train_csv = pd.read_csv(train_csv_path, header=None)
-test_csv_path = 'mouse_data_test.csv'  # 替换为你的CSV文件路径
+test_csv_path = '../mouse_data_test.csv'  # 替换为你的CSV文件路径
 test_csv = pd.read_csv(test_csv_path, header=None)
 
 # 提取dx, dy和标签
