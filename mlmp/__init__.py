@@ -1,5 +1,5 @@
 import os.path
-from mlmouse.predict import MLMouse
+from mlmp.predict import MLMouse
 from importlib.resources import files as resource_path
 
 
@@ -23,8 +23,8 @@ class TrainBySelf:
 
     @staticmethod
     def collect_data():
-        import mlmouse.normal_mouse_data
-        mlmouse.normal_mouse_data.MouseDataCollector()
+        import mlmp.normal_mouse_data
+        mlmp.normal_mouse_data.MouseDataCollector()
 
     @staticmethod
     def train():
@@ -36,17 +36,17 @@ class TrainBySelf:
             pass
         else:
             raise Exception('mouse_data_test.csv not found')
-        import mlmouse.train
-        mlmouse.train.main_prog()
+        import mlmp.train
+        mlmp.train.main_prog()
 
     def time_seq_mouse_data(self):
-        import mlmouse.time_seq_mouse_data
+        import mlmp.time_seq_mouse_data
         if not self.dev_features:
             raise Exception('Dev features not enabled')
-        mlmouse.time_seq_mouse_data.MouseDataCollector()
+        mlmp.time_seq_mouse_data.MouseDataCollector()
 
     def time_seq_train(self):
-        import mlmouse.time_seq_train
+        import mlmp.time_seq_train
         if not self.dev_features:
             raise Exception('Dev features not enabled')
         if os.path.exists('mouse_data_time_seq.csv'):
@@ -57,4 +57,4 @@ class TrainBySelf:
             pass
         else:
             raise Exception('mouse_data_time_seq_test.csv not found')
-        mlmouse.time_seq_train.train_model()
+        mlmp.time_seq_train.train_model()
