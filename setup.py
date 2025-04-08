@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mlmp",  # 包名
-    version="0.1.2",  # 版本号
+    version="0.1.3",  # 版本号
     author="zaixia108",  # 作者名
     author_email="xvbowen2012@gmail.com",  # 作者邮箱
     description="A Python package for mouse path control and training.",  # 描述

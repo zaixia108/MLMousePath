@@ -1,5 +1,5 @@
 import os.path
-from mlmp.predict import MLMouse
+from mlmp.predict import MLMouse, DevMLMouse
 from importlib.resources import files as resource_path
 
 
@@ -16,6 +16,15 @@ class mouse:
     def mouse_output(self, start, end, absulute=False) -> list:
         return self.mlmouse.mouse_output(start, end, absulute)
 
+class dev_mouse:
+    def __init__(self, model_path: str = None, dll: bool = True):
+        if model_path is None:
+            dll_resource = resource_path('mlmp').joinpath('mouse.dll')
+            model_path = str(dll_resource)
+        self.mlmouse = DevMLMouse(model_path, dll)
+
+    def mouse_output(self, start, end, absulute=False) -> list:
+        return self.mlmouse.mouse_output(start, end, absulute)
 
 class TrainBySelf:
     def __init__(self, dev_features: bool = False):
